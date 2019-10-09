@@ -4,11 +4,21 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
+ipykernel = "*"
 
 [packages]
 flask = "*"
 flask-wtf = "*"
 python-dotenv = "*"
+matplotlib = "*"
+numpy = "==1.16.4"
+pandas = "==0.24.2"
+folium = "*"
+boto3 = "*"
+geopy = "*"
+seaborn = "*"
+psycopg2 = "==2.7.7"
+pipfile = "*"
 
 [requires]
 python_version = "3.7"

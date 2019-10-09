@@ -1,20 +1,31 @@
 from app import app
-from app.forms import LoginForm
-from flask import render_template, flash, redirect, url_for
+from app.forms import ClaimForm
+from flask import render_template, flash, redirect, url_for, request
+from app.claim_telematics import get_trip_list, plot_trips
 
 @app.route('/')
-@app.route('/index')
+@app.route('/index', methods=['GET', 'POST'])
 def index():
-    return render_template('index.html')
-
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    form = LoginForm()
+    form = ClaimForm()
     if form.validate_on_submit():
-        flash('Login requested for user {}, remember_me={}'.format(form.username.data, form.remember_me.data))
-        return redirect(url_for('index'))
-    return render_template('login.html', title='Sign In', form=form)
+        claim_number = form.claim_num.data
+        start_date = form.start_date.data
+        end_date = form.end_date.data
+        interested_trips = get_trip_list(claim_number, start_date, end_date)
+        #return redirect(url_for('index'))
+        #return render_template('result.html', title=str(claim_number), tables=[interested_trips.to_html(classes='data', header="true")])
+        #return claim_result(claim_number, interested_trips)
+        #return redirect(url_for('.claim_result', claim_number=str(claim_number), trips=interested_trips))
+        trip_map = plot_trips(interested_trips)
+        trip_map.save('templates/map.html')
+        return redirect(url_for('.claim_result', claim_number=claim_number, trips=interested_trips.to_html(classes='data', header="true")))
+    return render_template('index.html', title='Claim Telematics', form=form)
+
+@app.route('/result/<claim_number>')
+def claim_result(claim_number):
+    #return render_template('result.html', title=str(claim_number), tables=[trips.to_html(classes='data', header="true")])
+    return render_template('result.html', title=claim_number, tables=[request.args.get('trips')])
+
 
 @app.route('/blog')
 def blog():

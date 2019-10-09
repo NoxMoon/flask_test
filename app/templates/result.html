@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+{% for table in tables %}
+            {{ table|safe }}
+{% endfor %}
+{% endblock %}
+
+{% block body %}
+{% include "map.html" %}
+{% endblock %}
