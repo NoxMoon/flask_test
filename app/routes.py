@@ -3,7 +3,7 @@ from app.forms import ClaimForm
 from flask import render_template, flash, redirect, url_for, request
 from app.claim_telematics import get_trip_list, plot_trips
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
 def index():
     form = ClaimForm()

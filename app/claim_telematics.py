@@ -215,7 +215,8 @@ def plot_trips(interested_trips, location=None):
     trip_list = []
     interested_trips['min_dist'] = np.nan
     interested_trips['has_gps'] = False
-    for i,data_file_name in enumerate(interested_trips.data_file_name):
+    #for i,data_file_name in enumerate(interested_trips.data_file_name):
+    for i, data_file_name in enumerate(["9dd089f1-93a8-4bd2-a15c-247a39788f8e.json.gz"]):
         trip = get_trip(data_file_name)
         if trip is not None:
             if trip._has_gps:
