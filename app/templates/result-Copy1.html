@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>{{ title }}</h1>
+    {% include "table.html" %}
+    <a href="url_for()">
+        <button type="button">
+            "Plot All Trips"
+        </button>
+    </a>
+<!--    {% include "map.html" %} -->
+{% endblock %}
+
