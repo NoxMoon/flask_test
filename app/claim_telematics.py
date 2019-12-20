@@ -196,30 +196,33 @@ def get_trip_list(claim_number):
 #     return interested_trips
 
 
-def plot_trips(interested_trips, claim_number='map', location=None):
+# def plot_trips(interested_trips, claim_number='map', location=None):
 
-#    start_coords = (46.9540700, 142.7360300)
-#    folium_map = folium.Map(location=start_coords, zoom_start=14)
-#    return folium_map
-#    trip_list = []
-#    trip = get_trip("9dd089f1-93a8-4bd2-a15c-247a39788f8e.json.gz")
-#    trip_list.append(trip)
-#    plots = plot_multiple_trip(trip_list, accident_location=location)
-#    plots.save('app/templates/map.html')
-#    return
 
+#     trip_list = []
+#     interested_trips['min_dist'] = np.nan
+#     interested_trips['has_gps'] = False
+#     for i,data_file_name in enumerate(interested_trips.data_file_name):
+#         trip = get_trip(data_file_name)
+#         if trip is not None:
+#             if trip._has_gps:
+#                 interested_trips['has_gps'].iloc[i] = True
+#                 interested_trips['min_dist'].iloc[i] = min_dist_to_location(trip, location)
+#                 trip_list.append(trip)
+# #    print(trip_list)
+#     plots = plot_multiple_trip(trip_list, accident_location=location)
+# #    print("done plotting")
+#     plots.save(f'app/templates/map_{claim_number}.html')
+#     return
+
+def plot_trips(trip_files, location=None, filename='maps/map.html'):
+    
     trip_list = []
-    interested_trips['min_dist'] = np.nan
-    interested_trips['has_gps'] = False
-    for i,data_file_name in enumerate(interested_trips.data_file_name):
+    for i, data_file_name in enumerate(trip_files):
         trip = get_trip(data_file_name)
-        if trip is not None:
-            if trip._has_gps:
-                interested_trips['has_gps'].iloc[i] = True
-                interested_trips['min_dist'].iloc[i] = min_dist_to_location(trip, location)
-                trip_list.append(trip)
-#    print(trip_list)
-    plots = plot_multiple_trip(trip_list, accident_location=location)
-#    print("done plotting")
-    plots.save(f'app/templates/map_{claim_number}.html')
-    return
+        if trip is not None and trip._has_gps:
+            trip_list.append(trip)
+            
+        plots = plot_multiple_trip(trip_list, accident_location=location)
+        plots.save(filename)
+        return

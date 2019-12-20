@@ -4,6 +4,7 @@ from flask import render_template, flash, redirect, url_for, request
 from app.claim_telematics import TripTable, get_trip_list, plot_trips
 from flask_table import Table, Col, LinkCol, ButtonCol
 from collections import deque
+import os, sys
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
@@ -57,8 +58,8 @@ def result():
         trips = get_trip_list(claim_number)
         results[claim_number] = trips
         
-    if not trip:
-        return "No trip found for user"
+    if results[claim_number] is None:
+        return render_template('error.html', message="No trip found for user")
     
     return render_template('result.html', claim_number=claim_number, start_date=start_date, end_date=end_date)
     #return redirect(url_for('trip_table', claim_number=claim_number, start_date=start_date, end_date=end_date))
@@ -76,8 +77,8 @@ def trip_table():
         
     trips = results[claim_number]
     interested_trips = trips.loc[trips.start_time_local >= start_date].loc[trips.start_time_local <= end_date]
-    if len(trip)==0:
-        return "no trip found in time frame"
+    if len(interested_trips)==0:
+        return render_template('error.html', message="no trip found in time frame")
 
     d = interested_trips.to_dict(orient='record')
     table = TripTable(d)
@@ -93,7 +94,7 @@ def trip_map():
     trip = request.args.get('trip')
     location = (request.args.get('lat'), request.args.get('long'))
     
-    if claim number:
+    if claim_number and start_date and end_date:
         if not claim_number in results:
             trips = get_trip_list(claim_number)
             results[claim_number] = trips
@@ -101,16 +102,25 @@ def trip_map():
         trips = results[claim_number]
         interested_trips = trips.loc[trips.start_time_local >= start_date].loc[trips.start_time_local <= end_date]
         trip_files = list(interested_trips.data_file_name)
+        filename = 'maps/'+claim_number+start_date.replace('-','')+end_date.replace('-','')+'.html'
         
     elif trip:
         trip_files = list(trip)
+        filename = trip[:-4]+'.html'
+        
+    else:
+        return render_template('error.html', message="invalid request for map")
+        
+    if len(trip_files)>100:
+        return render_template('error.html', message="too many trips to plot, can you refine the time frame?")
     
-    filename = 'maps/'+hash(tuple(trip_files))
+    #print(trip_files, hash(tuple(trip_files)))
+    #filename = 'maps/'+str(hash(tuple(trip_files)))+'.html'
     if not os.path.isfile(filename):
-        plot_trips(trip_files, location=None, filename)
+        plot_trips(trip_files, None, filename)
         
     file = open(filename, "r")
-    return file.readlines()
+    return file.read()
     
 
 @app.route('/blog')
