@@ -114,10 +114,12 @@ def trip_map():
     if len(trip_files)>100:
         return render_template('error.html', message="too many trips to plot, can you refine the time frame?")
     
-    #print(trip_files, hash(tuple(trip_files)))
-    #filename = 'maps/'+str(hash(tuple(trip_files)))+'.html'
+    #print(claim_number, start_date, end_date)
+    #print(trip_files)
     if not os.path.isfile(filename):
-        plot_trips(trip_files, None, filename)
+        message = plot_trips(trip_files, None, filename)
+        if message != "done":
+            return render_template('error.html', message="error plotting map (probably no trip had GPS)")
         
     file = open(filename, "r")
     return file.read()

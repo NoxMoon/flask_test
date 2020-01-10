@@ -222,7 +222,9 @@ def plot_trips(trip_files, location=None, filename='maps/map.html'):
         trip = get_trip(data_file_name)
         if trip is not None and trip._has_gps:
             trip_list.append(trip)
-            
-        plots = plot_multiple_trip(trip_list, accident_location=location)
-        plots.save(filename)
-        return
+      
+    if len(trip_list)==0:
+        return "no trip as gps"
+    plots = plot_multiple_trip(trip_list, accident_location=location)
+    plots.save(filename)
+    return "done"
